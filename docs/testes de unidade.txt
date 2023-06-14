@@ -7,3 +7,8 @@ Muitas pessoas sabem apenas fazer teste individuais
 
 Existe uma forma melhor de executar múltiplos testes variando seus valores
 É chamado de DDT - Data Driven Testing = Test Direcionado por Dados
+
+Normalmente, os testes de unidade são criados após a programação
+
+Existe uma forma de organização do trabalho que inverte isso. Primeiro
+se completam os testes e depois a programação

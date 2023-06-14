@@ -1,9 +1,32 @@
+// 1 Pacote
 package junto;
 
+// 2 Bibliotecas
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+
+// 3 - Classe
 public class CalculadoraDoisTest {
+    // 3.1 Atributos
+
+    // 3.2 Procedimentos
+
+    // 3.2.1 Uso Compartilhado
+    @DataProvider(name = "MassaMultiplicar")
+    public Object[][] massaMultiplicar() {
+        return new Object[][] {
+                {  5,  7, 35 },
+                {  2, 10, 20 },
+                { 20,  0, 0  },
+                { -5, 12,-60 },
+                { -5, -6, 30 }
+        };
+    };
+
+    // 3.2.2 Teste em si
 
     @Test
     public void testeSomar() {
@@ -47,29 +70,13 @@ public class CalculadoraDoisTest {
         Assert.assertEquals(resultadoAtual, resultadoEsperado);
     }
 
-    @Test
-    public void testeMultiplicarDoisPorDez() {
+    @Test(dataProvider = "MassaMultiplicar")
+    public void testeMultiplicarDD(double numUm, double numDois, double resultadoEsperado) {
         // Arrange
-        double num1 = 2;
-        double num2 = 10;
-        double resultadoEsperado = 20;
+        // Os dados são fornecidos para o teste através de uma lista
 
         // Act
-        double resultadoAtual = CalculadoraDois.multiplicar(num1, num2);
-
-        // Assert
-        Assert.assertEquals(resultadoAtual, resultadoEsperado);
-    }
-
-    @Test
-    public void testeMultiplicarVintePorZero() {
-        // Arrange
-        double num1 = 20;
-        double num2 = 0;
-        double resultadoEsperado = 0;
-
-        // Act
-        double resultadoAtual = CalculadoraDois.multiplicar(num1, num2);
+        double resultadoAtual = CalculadoraDois.multiplicar(numUm, numDois);
 
         // Assert
         Assert.assertEquals(resultadoAtual, resultadoEsperado);

@@ -1,4 +1,4 @@
-package iterasys;
+package br.com.iterasys;
 
 import junto.CalculadoraDois;
 import org.testng.annotations.Test;

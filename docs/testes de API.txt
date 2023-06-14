@@ -1,0 +1,8 @@
+TESTES DE API
+
+O que é uma API?
+Interface de comunicação e processamento entre funções e sistemas.
+
+Exemplo do Ifood
+
+App Ifood -->
