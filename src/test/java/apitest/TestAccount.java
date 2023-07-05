@@ -8,22 +8,21 @@ import entities.AccountEntity;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
+import org.testng.ITestContext;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
 // 3 - Classe
-public class Account {
+public class TestAccount {
     // 3.1 - Atributos
     String userId;
     String vlContentType = "application/json";
     String jsonBody;
     String uri = "https://bookstore.toolsqa.com/Account/v1/"; // Endereço base
     Response resposta; // guardar o retorno da API
-    String token; // guardar o token - autenticação do usuário
+    static String token; // guardar o token - autenticação do usuário
 
     AccountEntity accountEntity;
-
     // 3.1.2 Instanciar Classes Externas
     Gson gson = new Gson();
 
@@ -31,12 +30,12 @@ public class Account {
 
     // Método #1 - Criar Usuário
     @Test(priority = 0)
-    public void testCreateUser() {
+    public void testCreateUser(ITestContext context) {
         // Arrange
         accountEntity = new AccountEntity(); // Instancia a entidade
 
-        accountEntity.userName = "Richardisii"; // entrada e saida (resultado esperado)
-        accountEntity.password = "P@ss0rd1"; // entrada
+        accountEntity.userName = "Richarddd"; // entrada e saida (resultado esperado)
+        accountEntity.password = "P@ss0rd3"; // entrada
 
         jsonBody = gson.toJson(accountEntity); // Converte a entidade usuario no formato Json
 
@@ -44,27 +43,27 @@ public class Account {
         resposta = (Response) // Casting em Classes
             given()
                     .contentType(vlContentType)  // tipo do conteúdo
-                    .log().all()                      // registre tudo
                     .body(jsonBody)                  // corpo da mensagem que será enviada
+                    .log().all()                      // registre tudo
             .when()
                     .post(uri + "User")
 
             // Assert
             .then()
-                    .log().all()     // registre tudo na volta
                     .statusCode(201) // valida a comunicação
                     .body("username", is(accountEntity.userName)) // valida o usuário
+                    .log().all()     // registre tudo na volta
             .extract()
             ; // fim da linha do REST-assured
 
         userId = resposta.jsonPath().getString("userID");
-
+        context.setAttribute("userID", userId);
         System.out.println("UserID extraido: " + userId);
 
     } // fim do método de criação de usuário
 
     @Test(priority = 1)
-    public void testGerenateToke() {
+    public void testGerenateToken(ITestContext context) {
         // Arrange
         // --> Os dados de entrada são fornecidos pela AccountEntity
         // --> O resultado esperaco é que ele receba o token
@@ -73,23 +72,23 @@ public class Account {
         resposta = (Response)
             given()
                     .contentType(vlContentType)
-                    .log().all()
                     .body(jsonBody)
+                    .log().all()
             .when()
                     .post(uri + "GenerateToken")
 
             // Assert
             .then()
-                    .log().all()
                     .statusCode(200) // valida a comunicação
                     .body("status", is("Success"))
                     .body("result", is("User authorized successfully."))
+                    .log().all()
             .extract()
             ;
 
         // Extração do Token
         token = resposta.jsonPath().getString("token");
-
+        context.setAttribute("token", token);
         System.out.println("token: " + token);
 
         // Valida
@@ -109,16 +108,16 @@ public class Account {
         // Act
             given()
                 .contentType(vlContentType)
-                .log().all()
                 .body(jsonBody)
+                .log().all()
             .when()
                 .post(uri + "Authorized")
 
         // Assert
             .then()
-                .log().all()
                 .statusCode(200)
                 .body(is("true"))
+                .log().all()
             ;
     }
 
@@ -139,10 +138,10 @@ public class Account {
 
         // Assert
         .then()
-            .log().all()
             .statusCode(401)
             .body("code", is("1200"))
             .body("message", is("User not authorized!"))
+            .log().all()
         ;
     }
 
@@ -158,16 +157,38 @@ public class Account {
         // Act
         given()
             .contentType(vlContentType)
-            .log().all()
             .header("Authorization", "Bearer " + token) // É necessário concatenar o token com a string "Bearer" para autenticação ser feita.
+            .log().all()
         .when()
             .get(uri + "User/" + userId)
 
         // Assert
         .then()
-            .log().all()
             .statusCode(200)
             .body("username", is(accountEntity.userName))
+            .log().all()
+        ;
+    }
+
+    @Test(priority = 5)
+    public void testDeleteUser() {
+        // Arrange
+            // Dados de Entrada
+                // userId que foi extraido no método testeCreateUser()
+
+        // Act
+        given()
+            .contentType(vlContentType)
+            .header("Authorization", "Bearer " + token)
+            .log().all()
+        .when()
+            .delete(uri + "User/" + userId)
+
+        // Assert
+        .then()
+            .statusCode(204) // A API retorna 204 pois ela tem um BUG, pois exclui o usuário e invalida o Token,
+            .log().all()
+        // que é do próprio usuário excluído.
         ;
     }
 }
