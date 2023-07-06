@@ -77,7 +77,7 @@ public class TestBookStore {
     public void testUpdateLoan(ITestContext context) {
         // Arrange
             // Os dados de entrada
-                 // userId é extraído do BeforeMethod
+                 // userId é extraído do BefoneClass
         String isbnAntigo = "9781449325862";
         String isbnNovo = "9781449331818";
         loanEntity = new LoanEntity(); // Reiniciando o objeto da classe loanEntity, para não conter o collectionOfIsbns criado anteriormente.
@@ -99,6 +99,26 @@ public class TestBookStore {
                 .log().all()
                 .statusCode(200)
                 .body("books[0].isbn", is(isbnNovo))
+        ;
+    }
+
+    @Test(priority = 3)
+    public void testDeleteLoans(ITestContext context) {
+        // Arrange
+            // userId vem do BeforeClass
+
+        // Act
+        given()
+                .log().all()
+                .contentType(vlContentType)
+                .header("Authorization", "Bearer " + context.getAttribute("token"))
+        .when()
+                .delete(uri + "Books?UserId=" + context.getAttribute("userID"))
+
+        // Assert
+        .then()
+                .log().all()
+                .statusCode(204)
         ;
     }
 }
